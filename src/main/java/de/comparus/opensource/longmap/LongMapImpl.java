@@ -22,7 +22,7 @@ public class LongMapImpl<V> implements LongMap<V> {
             throw new IllegalArgumentException("Illegal initial capacity: " +
                     capacity);
         if (capacity > MAXIMUM_CAPACITY) {
-            this.capacity = MAXIMUM_CAPACITY / 1990800;
+            this.capacity = MAXIMUM_CAPACITY / 3;
         } else {
             this.capacity = capacity;
         }
