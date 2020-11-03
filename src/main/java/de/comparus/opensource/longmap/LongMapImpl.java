@@ -3,22 +3,31 @@ package de.comparus.opensource.longmap;
 import java.util.*;
 
 public class LongMapImpl<V> implements LongMap<V> {
-    private static final double LOAD_FACTORY = 0.75;
+    private static final float LOAD_FACTORY = 0.75F;
+    private static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
+    private static final int MAXIMUM_CAPACITY = 1 << 30;
 
     private Entry<V>[] table;
     private int capacity;
     private int size;
 
     public LongMapImpl() {
-        this.capacity = 16;
+        this.capacity = DEFAULT_INITIAL_CAPACITY;
         this.size = 0;
         this.table = new Entry[capacity];
     }
 
-    public LongMapImpl(long capacity) {
-        this.capacity = (int) capacity;
+    public LongMapImpl(int capacity) {
+        if (capacity < 0)
+            throw new IllegalArgumentException("Illegal initial capacity: " +
+                    capacity);
+        if (capacity > MAXIMUM_CAPACITY) {
+            this.capacity = MAXIMUM_CAPACITY / 1990800;
+        } else {
+            this.capacity = capacity;
+        }
         this.size = 0;
-        this.table = new Entry[(int) capacity];
+        this.table = new Entry[this.capacity];
     }
 
     public V put(long key, V value) {
@@ -112,8 +121,11 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
 
     private void resize() {
-        this.capacity *= 2;
-        Entry<V>[] newTable = new Entry[capacity];
+        if (table.length >= MAXIMUM_CAPACITY) {
+            return;
+        }
+        int newLength = (capacity * 2);
+        Entry<V>[] newTable = new Entry[newLength];
         transfer(newTable);
         table = newTable;
     }
@@ -121,7 +133,7 @@ public class LongMapImpl<V> implements LongMap<V> {
     private void transfer(Entry<V>[] newEntry) {
         for (int i = 0; i < table.length; i++) {
             if (table[i] != null) {
-                int index = indexFor(table[i].hash, capacity);
+                int index = indexFor(table[i].hash, table.length);
                 newEntry[index] = table[i];
             }
         }
@@ -146,10 +158,11 @@ public class LongMapImpl<V> implements LongMap<V> {
     }
 
     private int hash(long key) {
-        return (int) (Long.hashCode(key) * 31 * LOAD_FACTORY);
+        int h = Long.hashCode(key);
+        return (key == 0) ? 0 : h ^ (h >>> 16);
     }
 
-    public class Entry<V> implements Iterator<Entry<V>> {
+    private class Entry<V> implements Iterator<Entry<V>> {
         private long key;
         private V value;
         private int hash;

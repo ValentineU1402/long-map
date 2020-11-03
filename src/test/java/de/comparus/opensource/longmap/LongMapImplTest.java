@@ -3,8 +3,7 @@ package de.comparus.opensource.longmap;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class LongMapImplTest {
     private LongMap longMap;
@@ -16,8 +15,8 @@ public class LongMapImplTest {
 
     @Test
     public void whenPutValues_shouldCorrectGetValues() {
-        longMap.put(1488L, "Spider");
-        assertEquals( "Spider", longMap.get(1488L));
+        longMap.put(1483L, "Spider");
+        assertEquals("Spider", longMap.get(1483L));
     }
 
     @Test
@@ -45,11 +44,11 @@ public class LongMapImplTest {
     }
 
     @Test
-    public void whenInputMore_shouldReturnCorrectSize() {
-        for (long i = 1; i < 18; i++) {
+    public void whenInputMoreValues_shouldReturnCorrectSize() {
+        for (long i = 1; i < 100234000; i++) {
             longMap.put(i, "lol" + i);
         }
-        assertEquals( 17, longMap.size());
+        assertEquals(100233999, longMap.size());
     }
 
     @Test
@@ -66,7 +65,13 @@ public class LongMapImplTest {
         longMap.put(3788L, "deviro");
         longMap.clear();
         assertTrue(!longMap.containsKey(189273L));
-        assertEquals( 0, longMap.size());
+        assertEquals(0, longMap.size());
+    }
+
+    @Test
+    public void whenCreateIntegerMaxValueCapacity_shouldCorrectCreate() {
+        longMap = new LongMapImpl(Integer.MAX_VALUE);
+        assertNotNull(longMap);
     }
 
     @Test(expected = IllegalArgumentException.class)
