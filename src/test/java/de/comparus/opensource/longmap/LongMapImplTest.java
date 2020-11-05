@@ -45,10 +45,10 @@ public class LongMapImplTest {
 
     @Test
     public void whenInputMoreValues_shouldReturnCorrectSize() {
-        for (long i = 1; i < 100234000; i++) {
+        for (long i = 1; i <= 100234000; i++) {
             longMap.put(i, "lol" + i);
         }
-        assertEquals(100233999, longMap.size());
+        assertEquals(100234000, longMap.size());
     }
 
     @Test
